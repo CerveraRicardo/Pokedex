@@ -2,9 +2,11 @@ fetch("https://pokeapi.co/api/v2/pokemon?limit=150")
   .then((response) => response.json())
   .then(readPokedex);
 
-const container = document.getElementById("ListPokemon");
-const namePokemonInput = document.getElementById("NamePokemon");
-const searchButton = document.getElementById("Search");
+const container = document.getElementById("listPokemon");
+listPokemon.classList.add = "ListPokemon";
+
+const namePokemonInput = document.getElementById("namePokemon");
+const searchButton = document.getElementById("search");
 const pagePokemon = document.getElementById("pagePokemons");
 let pokemonData = null;
 let pokemonDataBegin = null;
@@ -56,8 +58,7 @@ function printPokemon(pokemons) {
     pokemon.className = "title-name";
 
     const image = document.createElement('img');
-    image.src = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/' + idPokemon + '.png';
-
+    image.src = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/" + idPokemon +".png";
     const info = document.createElement("div");
 
     image.addEventListener("click", () => {
@@ -95,6 +96,7 @@ function printPokemon(pokemons) {
           });
 
           const movesButton = document.createElement("button");
+          movesButton.classList.add("button-learnMoves");
           movesButton.innerText = "Learn moves";
           
           movesButton.addEventListener("click", () => {
@@ -134,11 +136,13 @@ function readPokedex(data) {
   const pageSize = Math.ceil(pokemonData.results.length / 15)
 
   for (let index = 0; index < pageSize; index++) {
-    const listPokeonbutton = document.createElement("button");
-    listPokeonbutton.innerText = index + 1
-    pagePokemon.appendChild(listPokeonbutton);
+    const listPokemonbutton = document.createElement("button");
+    listPokemonbutton.classList.add ("page-number-button");
 
-    listPokeonbutton.addEventListener("click", () => {
+    listPokemonbutton.innerText = index + 1
+    pagePokemon.appendChild(listPokemonbutton);
+
+    listPokemonbutton.addEventListener("click", () => {
       currentPage = index;
       container.innerHTML = "";
       let begin = index * 15;
@@ -149,6 +153,8 @@ function readPokedex(data) {
     });
   }
 }
+
+
 //1.flex
 //2.utilizar flex para que los pokemons se muestren en filas de 3
 //subir repositorio a git
