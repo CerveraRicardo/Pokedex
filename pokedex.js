@@ -26,6 +26,14 @@ function searchClicked() {
     }
   });
 
+  // Si no hay pokemones encontrados, agregar un mensaje
+  if (pokemonFiltered.length === 0) {
+    const noFound = document.createElement("p");
+    noFound.innerText = "No pokemon found";
+    container.appendChild(noFound);
+    return;
+  }
+
   printPokemon(pokemonFiltered);
 };
 

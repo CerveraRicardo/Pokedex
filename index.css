@@ -1,6 +1,13 @@
- body {
+ html, body {
     background-color: #f4f4f4;
-    margin: 2.5px;
+    margin: 0;
+    padding: 0;
+ }
+
+ .container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
  }
 
 .page-title {
@@ -21,6 +28,8 @@
 }    
 
 .ListPokemon {
+    flex: 1;
+    justify-content: center;
     display: flex;
     flex-direction:row;
     flex-wrap: wrap;
