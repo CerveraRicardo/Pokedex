@@ -3,7 +3,6 @@ fetch("https://pokeapi.co/api/v2/pokemon?limit=150")
   .then(readPokedex);
 
 const container = document.getElementById("listPokemon");
-listPokemon.classList.add = "ListPokemon";
 
 const namePokemonInput = document.getElementById("namePokemon");
 const searchButton = document.getElementById("search");
@@ -12,9 +11,13 @@ let pokemonData = null;
 let pokemonDataBegin = null;
 let currentPage = 0;
 
+
+
 searchButton.addEventListener("click", searchClicked);
 
+
 function searchClicked() {
+  container.classList.remove("one-card");
   const searchPokemon = namePokemonInput.value.toLowerCase();
   container.innerHTML = "";
 
@@ -26,15 +29,24 @@ function searchClicked() {
     }
   });
 
+if (pokemonFiltered.length === 0) {
+    const errorMsg = document.createElement("p");
+    errorMsg.textContent = "No Pokemon found with that name...";
+    errorMsg.className = "error-message";
+    container.appendChild(errorMsg);
+  } else {
+
   printPokemon(pokemonFiltered);
+  }
 };
 
 namePokemonInput.addEventListener("input", () => {
   const searchPokemon = namePokemonInput.value.toLowerCase();
   if (searchPokemon === "") {
     container.innerHTML = "";
-    const begin = currentPage * 20;
-    const end = begin + 20;
+    container.classList.remove("one-card");
+    const begin = currentPage * 15;
+    const end = begin + 15;
     printPokemon(pokemonData.results.slice(begin, end));
     return
   }
@@ -61,11 +73,23 @@ function printPokemon(pokemons) {
     image.src = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/" + idPokemon +".png";
     const info = document.createElement("div");
 
-    image.addEventListener("click", () => {
+    card.addEventListener("click", () => {
+      
       
       if (info.hasChildNodes()) {
+        info.innerHTML = "";
+        card.classList.remove("expanded");
+        card.classList.add("closing");
+        container.classList.remove("one-card");
+
+        
+        setTimeout(() => {
+            card.classList.remove("closing"); 
+        }, 500);
         return;
       }
+      card.classList.add("expanded");
+      container.classList.add("one-card");
 
       fetch("https://pokeapi.co/api/v2/pokemon/" + idPokemon + "/")
         .then((response) => response.json())
@@ -73,46 +97,117 @@ function printPokemon(pokemons) {
             
           console.log(data);
 
-          const attributes = ["weight", "height", "types", "abilities"];
+
+          const typeColors = {
+            fire: '#E62829',      
+            grass: '#509C34',     
+            electric: '#D8B600',  
+            water: '#2980EF',     
+            ground: '#A89050',    
+            rock: '#A38C21',      
+            fairy: '#FDB9E9',     
+            poison: '#A040A0',    
+            bug: '#729F3F',       
+            dragon: '#5060E1',    
+            psychic: '#F366B9',   
+            flying: '#3DC7EF',    
+            fighting: '#C22E28',  
+            normal: '#A8A77A',    
+            ice: '#3DCEF3',       
+            ghost: '#7B62A3',     
+            steel: '#9EB7B8'
+          };
+        
+          const attributes = ["weight", "height", "types", "abilities","stats"];
 
           attributes.forEach(attribute => {
-            const newElement = document.createElement("p");
-            
+            const newElement = document.createElement("div");
             newElement.classList.add("stat-item");
             newElement.classList.add("stat-" + attribute);
 
-            let valueData = "";
-
             if (attribute === "types") {
-              valueData = data.types.map(item => item.type.name).join(", ");
-            } else if (attribute === "abilities") {
+
+              newElement.textContent = "Types: "
+
+              newElement.classList.add("types-container");
+              
+              data.types.forEach((item) => {
+                    const typeName = item.type.name
+                    const span = document.createElement("span");
+                    span.textContent = typeName;
+                    span.classList.add("type-badge");
+                    span.style.backgroundColor = typeColors[typeName] || '#666';
+                    newElement.appendChild(span);
+
+                  }); 
+
+            } else if(attribute ==="stats"){
+              const title = document.createElement("p");
+              title.textContent = "Stats:";
+              title.classList.add("stats-title");
+              newElement.appendChild(title);
+
+              const statsContainer = document.createElement("div");
+              statsContainer.classList.add("stats-grid");
+
+              data.stats.forEach(stat => {
+                  const statText = document.createElement("p");
+  
+                  
+
+                  statText.textContent = stat.stat.name.replace(/-/g," ") + ": " + stat.base_stat;
+                  statText.classList.add("stat-text");
+                  statsContainer.appendChild(statText);
+              });
+              newElement.appendChild(statsContainer);
+
+
+            }
+            
+            else {
+
+              let valueData = "";
+            
+              if (attribute === "abilities") {
               valueData = data.abilities.map(item => item.ability.name).join(", ");
             } else {
               valueData = data[attribute];
             }
 
             newElement.textContent = attribute + ": " + valueData;
+            }
             info.appendChild(newElement);
           });
 
           const movesButton = document.createElement("button");
           movesButton.classList.add("button-learnMoves");
           movesButton.innerText = "Learn moves";
-          
-          movesButton.addEventListener("click", () => {
+          info.appendChild(movesButton);
+
+          movesButton.addEventListener("click", (event) => {
+            event.stopPropagation();
+
+            const existingList= movesButton.nextElementSibling;
             if (movesButton.nextElementSibling && movesButton.nextElementSibling.className === "moves-text") {
+              existingList.innerHTML = "";
+              existingList.remove();
               return;
             }
-            const moves = data.moves.map(item => item.move.name).join(", ");
-            
-            const textMoves = document.createElement("p");
-            textMoves.className = "moves-text"; 
-            textMoves.textContent = "Moves: " + moves;
-            
-            info.appendChild(textMoves);
-          });
+            //const moves = data.moves.map(item => item.move.name).join(", ");
+            const movesList = document.createElement("ul");
+            //const textMoves = document.createElement("p");
+            movesList.className = "moves-text"; 
 
-          info.appendChild(movesButton);
+            data.moves.forEach(item =>{
+              const moveItem = document.createElement("li")
+              moveItem.textContent = item.move.name.replace(/-/g," ");
+              movesList.appendChild(moveItem);
+            });
+
+            movesList.addEventListener("click", (e) => e.stopPropagation());
+            info.appendChild(movesList);
+          });
+          
         });
     });
 
@@ -143,6 +238,7 @@ function readPokedex(data) {
     pagePokemon.appendChild(listPokemonbutton);
 
     listPokemonbutton.addEventListener("click", () => {
+      container.classList.remove("one-card")
       currentPage = index;
       container.innerHTML = "";
       let begin = index * 15;
