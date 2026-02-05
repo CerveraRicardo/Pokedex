@@ -293,4 +293,15 @@ button {
         flex-direction: column;
         align-items: stretch;
     }
+
+    #pagePokemons {
+        flex-wrap: wrap;
+        gap: 5px; 
+        padding-bottom: 20px;
+    }
+    
+    .page-number-button {
+        padding: 8px 12px; 
+        margin: 2px;
+    }
 }
