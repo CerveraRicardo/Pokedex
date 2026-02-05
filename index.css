@@ -238,6 +238,18 @@ button {
     pointer-events: none;
 
 }
+
+.page-number-button.active {
+    background-color: white;
+    color: black;
+    border: 2px solid #000; 
+    cursor: default;
+}
+
+
+
+
+
 @keyframes cleane {
     0% {
         opacity: 0;            
@@ -263,5 +275,22 @@ button {
         opacity: 1;
         transform: scale(1) translateY(0);;
         z-index: 1;
+    }
+}
+
+/* cell phones */
+@media (max-width: 768px) {
+    .pokemon-card {
+        flex-basis: 90%; 
+        margin-bottom: 20px;
+    }
+
+    .ListPokemon {
+        gap: 10px; 
+    }
+    
+    .NamePokemon-Search {
+        flex-direction: column;
+        align-items: stretch;
     }
 }

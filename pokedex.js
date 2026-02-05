@@ -10,8 +10,8 @@ const pagePokemon = document.getElementById("pagePokemons");
 let pokemonData = null;
 let pokemonDataBegin = null;
 let currentPage = 0;
-
-
+let totalPages =0;
+  
 
 searchButton.addEventListener("click", searchClicked);
 
@@ -225,7 +225,9 @@ function readPokedex(data) {
   
   pokemonData = data;
   pokemonDataBegin = pokemonData.results.slice(0, 15);
-
+  totalPages = Math.ceil(pokemonData.results.length / 15);
+  changePage(0);
+  /*
   printPokemon(pokemonDataBegin);
 
   const pageSize = Math.ceil(pokemonData.results.length / 15)
@@ -247,8 +249,67 @@ function readPokedex(data) {
       const partPokemon = pokemonData.results.slice(begin, end);
       printPokemon(partPokemon);
     });
-  }
+  }*/
 }
+
+function changePage(pageIndex){
+  if (pageIndex< 0 || pageIndex > totalPages) return;
+  
+  currentPage = pageIndex;
+
+  container.classList.remove("one-card");
+  container.innerHTML = "";
+
+  const begin = currentPage * 15;
+  const end = begin + 15;
+    
+  printPokemon(pokemonData.results.slice(begin, end));
+  updatePagination();
+}
+
+function updatePagination(){
+pagePokemon.innerHTML = "";
+
+const prevButton = document.createElement("button");
+  prevButton.innerText = "<";
+  prevButton.classList.add("page-number-button");
+  if (currentPage === 0) prevButton.disabled = true;
+  prevButton.addEventListener("click", () => changePage(currentPage - 1));
+  pagePokemon.appendChild(prevButton);
+
+  let start = Math.max(0, currentPage - 2);
+  let end = Math.min(totalPages, start + 5);
+  
+  if (end - start < 5) {
+      start = Math.max(0, end - 5);
+  }
+
+  for (let i = start; i < end; i++) {
+    const btn = document.createElement("button");
+    btn.innerText = i + 1;
+    btn.classList.add("page-number-button");
+
+
+  if (i === currentPage) {
+    btn.classList.add("active")
+    }
+
+    btn.addEventListener("click", () => changePage(i));
+    pagePokemon.appendChild(btn);
+  }
+
+  const nextButton = document.createElement("button");
+  nextButton.innerText = ">";
+  nextButton.classList.add("page-number-button");
+  if (currentPage === totalPages - 1) nextButton.disabled = true;
+  nextButton.addEventListener("click", () => changePage(currentPage + 1));
+  pagePokemon.appendChild(nextButton);
+
+}
+
+
+
+
 
 
 //1.flex
